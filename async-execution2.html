@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Asynchronous Execution with JS Interpreter</title>
+  <script src="acorn_interpreter.js"></script>
+  <script src="google-blockly-a10c686/blockly_compressed.js"></script>
+  <script src="google-blockly-a10c686/blocks_compressed.js"></script>
+  <script src="google-blockly-a10c686/javascript_compressed.js"></script>
+      <script src="google-blockly-a10c686/python_compressed.js"></script>
+  <script src="google-blockly-a10c686/msg/js/en.js"></script>
+  <script src="wait_blocks2.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+</head>
+<body>
+  <p>
+    <button onclick="runCode()" id="runButton">Show Python</button>
+  </p>
+
+  <div style="width: 100%">
+    <div id="blocklyDiv"
+        style="display: inline-block; height: 480px; width: 58%"></div>
+    <textarea id="output" disabled="disabled"
+        style="display: inline-block; height: 480px; width: 38%;">
+    </textarea>
+  </div>
+
+  <xml id="toolbox" style="display: none">
+    <category name="Logic">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+    </category>
+    <category name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+    </category>
+    <category name="Text">
+      <block type="text"></block>
+      <block type="text_length"></block>
+      <block type="text_print"></block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+    <category name="Functions" custom="PROCEDURE"></category>
+  </xml>
+
+  <xml id="startBlocks" style="display: none">
+    <block type="variables_set" id="set_n_initial" inline="true" x="20" y="20">
+      <field name="VAR">n</field>
+      <value name="VALUE">
+        <block type="math_number">
+          <field name="NUM">1</field>
+        </block>
+      </value>
+      <next>
+        <block type="controls_repeat_ext" id="repeat" inline="true">
+          <value name="TIMES">
+            <block type="math_number">
+              <field name="NUM">4</field>
+            </block>
+          </value> 
+          <statement name="DO">
+           <block type="wait_seconds" id="wait">
+              <field name="SECONDS">1.0</field>
+              <next>
+                <block type="variables_set" id="set_n_update" inline="true">
+                  <field name="VAR">n</field>
+                  <value name="VALUE">
+                    <block type="math_arithmetic" inline="true">
+                      <field name="OP">MULTIPLY</field>
+                      <value name="A">
+                        <block type="variables_get">
+                          <field name="VAR">n</field>
+                        </block>
+                      </value>
+                      <value name="B">
+                        <block type="math_number">
+                          <field name="NUM">2</field>
+                        </block>
+                      </value>
+                    </block>
+                  </value>
+                  <next>
+                    <block type="text_print" id="print" inline="false">
+                      <value name="TEXT">
+                        <block type="variables_get">
+                          <field name="VAR">n</field>
+                        </block>
+                      </value>
+                    </block>
+                  </next>
+                </block>
+              </next>
+            </block>
+          </statement>
+        </block>
+      </next>
+    </block>
+  </xml>
+
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: 'google-blockly-a10c686/media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                              workspace);
+
+    // Exit is used to signal the end of a script.
+    Blockly.Python.addReservedWords('exit');
+
+    var outputArea = document.getElementById('output');
+    var runButton = document.getElementById('runButton');
+    outputArea.value = 'Show code:\n=================';
+
+    var highlightPause = false;
+    var latestCode = '';
+
+    function resetStepUi(clearOutput) {
+    //  workspace.highlightBlock(null);
+    //  highlightPause = false;
+      runButton.disabled = '';
+
+      if (clearOutput) {
+        outputArea.value = 'Show code:\n=================';
+      }
+    }
+
+    function runCode() {
+        //resetStepUi(true);
+        if(highlightPause == false){
+        highlightPause = true;
+        latestCode = Blockly.Python.workspaceToCode(workspace);
+        outputArea.value = outputArea.value +'\n' + latestCode;
+        }else{
+          //   highlightPause = false;
+            resetStepUi(true);
+            latestCode = Blockly.Python.workspaceToCode(workspace);
+        outputArea.value = outputArea.value +'\n' + latestCode;
+        }
+    }
+
+    // Load the interpreter now, and upon future changes.
+ //   generateCodeAndLoadIntoInterpreter();
+   
+  </script>
+</body>
+</html>

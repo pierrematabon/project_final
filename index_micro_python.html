@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!--
+                                                                             .:://++++++//:-.
+                                                                           .++/::++++++++++++/`
+                                                                           :++   /+++++++++++/:
+                                                                           :++/:/++++++++++////
+  __  __ _                _____       _   _                                .---------+++//////:
+ |  \/  (_)              |  __ \     | | | |                        -:///////////////++///////: ddddhs:
+ | \  / |_  ___ _ __ ___ | |__) |   _| |_| |__   ___  _ __        -++++++++++++++++++/////////: ddddddds`
+ | |\/| | |/ __| '__/ _ \|  ___/ | | | __| '_ \ / _ \| '_ \      .+++++++++++++++++///////////: ddddddddo
+ | |  | | | (__| | | (_) | |   | |_| | |_| | | | (_) | | | |     /+++++++++++++++/////////////`/ddddddddd
+ |_|  |_|_|\___|_|  \___/|_|    \__, |\__|_| |_|\___/|_| |_|     ++++++++++++/::::::::::::--..+dddddddddd
+                                 __/ |                           ++++++++++:`-+syyyyyyyysssyhdddddddddddd
+                                |___/                            /++++++++-.hmmdddddddddddddddddddddddddh
+                                                                 -+++++++/`omddddddddddddddddddddddddddd+
+                                                                  :++++///`sddddddddddddddddddddddddddd+
+                                                                   .://///`sdddddddddhyyyyyyyyyyyyyys/`
+                                                                           sdddddddddo++++++++/
+                                                                           sdddddddddddddhshddy
+                                                                           oddddddddddddd`  hdy
+                                                                           .yddddddddddddyoydd/
+                                                                             ./oyhhdddddhys+:`
+WELL DONE!
+
+You've found the source! :-)
+
+If you want to see how the editor works you should check out the python-main.js file - it has all sorts of
+helpful comments for you so you'll be able to work it all out.
+
+If you're wondering what the long string of random looking characters is at the end of this file, well, it's
+a copy of the MicroPython runtime that we copy onto the micro:bit. When you click download, the code you've
+written in the editor is similarly encoded and then inserted at the end where you see a line of ::::::::::::
+characters.
+
+If you want to know more about Python visit:
+
+http://python.org/
+
+If you want to know more about MicroPython (the version of Python we're using here), then visit:
+
+http://micropython.org/
+
+Finally, remember the Zen of MicroPython:
+
+Code,
+Hack it,
+Less is more,
+Keep it simple,
+Small is beautiful,
+
+Be brave! Break things! Learn and have fun!
+Express yourself with MicroPython.
+
+:-)
+
+Happy hacking,
+
+Nicholas and Damien.
+    -->
+    <head>
+        <meta charset="utf-8">
+        <title>Python editor</title>
+        <link rel="stylesheet" type="text/css" href="static/css/style.css" />
+        <link rel="stylesheet" type="text/css" href="static/css/vex.css" />
+        <link rel="stylesheet" type="text/css" href="static/css/vex-theme-wireframe.css" />
+        <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
+        <link rel="icon" href="static/img/favicon.ico">
+    </head>
+    <body>
+        <script type="application/javascript">
+        <!-- VERSION INFORMATION -->
+        VERSION = "0.1.0";
+        </script>
+        <script id="load-template" type="x-tmpl-mustache">
+            <h2><i class="fa fa-upload"></i> <strong>{{ title }}</strong></h2>
+            <div class="load-drag-target" id="load-drag-target">
+                <p>{{ instructions }}</p>
+            </div>
+            <div class="load-form">
+                <form id="load-form-form">
+                    <input type="file" name="load-form-file-upload"/><br/>
+                    <input type="submit" value="{{ submit }}"/>
+                </form>
+            </div>
+            <div id="load-alt">
+                <p><a href="#" class="load-form load-toggle">{{ toggle-drop }}</a></p>
+                <p><a href="#" class="load-drag-target load-toggle">{{ toggle-file }}</a></p>
+            </div>
+        </script>
+        <script id="snippet-template" type="x-tmpl-mustache">
+            <h2><i class="fa fa-cogs"></i> <strong>{{ title }}</strong></h2>
+            <p>{{ description }}</p>
+            <p>{{ instructions }}</p>
+
+            <table class="snippet-table">
+                <tr>
+                    <th>trigger</th>
+                    <th>description</th>
+                </tr>
+                {{#snippets}}
+                <tr class="snippet-selection">
+                    <td>{{trigger}}<span class="snippet-name">{{name}}</span></td>
+                    <td>{{#describe}}{{name}}{{/describe}}</td>
+                </tr>
+                {{/snippets}}
+            </table>
+
+        </script>
+        <script id="share-template" type="x-tmpl-mustache">
+            <h2><i class="fa fa-share-alt"></i> <strong>{{ title }}</strong></h2>
+            <div id="make-link">
+                <p>{{ instructions }}</p>
+                <p><label for="passphrase" class="share-label">{{ passphrase }}</label> <input id="passphrase" type="password"/></p>
+                <p><label for="hint" class="share-label">{{ hint }}</label> <input id="hint"/></p>
+                <p><button id="button-create-link">{{ button }}</button></p>
+            </div>
+            <div id="share-link">
+                <p>{{ description }}</p>
+                <textarea id="direct-link" readonly style="width:100%; height:200px;border:0;"></textarea>
+                <p id="shortener" style="display: none;">{{ shortener }} <a href="#" id="short-link"></a></p>
+            </div>
+        </script>
+        <script id="decrypt-template" type="x-tmpl-mustache">
+            <h2><i class="fa fa-unlock-alt"></i> <strong>{{ title }}</strong></h2>
+            <p>{{ instructions }}</p>
+            <p><label for="passphrase" class="share-label">{{ passphrase }}</label> <input id="passphrase" type="password"/></p>
+            <p>{{ hint }}</p>
+            <p><button id="button-decrypt-link">{{ button }}</button></p>
+        </script>
+        <script id="messagebar-template" type="x-tmpl-mustache">
+            <i class="fa fa-warning"></i> <strong>{{ title }}</strong>
+            <a href="#" id="messagebar-link">{{ link }}</a> {{ instructions }}
+            <a href="#" id="messagebar-close">{{ close }}</a>
+        </script>
+        <div id="main" class="vbox">
+          <div id="messagebar" class="hbox"></div>
+          <div id="toolbox" class="hbox">
+            <div id="commands" class="hbox">
+                <a href="#" class="roundbutton" id="command-download"
+                    tabindex="1"
+                    title="Download a hex file to flash onto your micro:bit">
+                    <div class="roundsymbol">
+                                      <svg class="svg svg-icon-touchdevelop" viewBox="50 50 380 380" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-label="touchdevelop,white">
+                                                      <path d="m 185.96612,110.36806 41.029,41.029 0,-72.834699 27.352,0 0.001,72.834699 41.029,-41.029 0,31.911 -54.706,54.706 -54.705,-54.706 0,-31.911 z m 98.203,181.9 c 0,-9.128 7.406,-16.539 16.541,-16.539 9.146,0 16.535,7.411 16.535,16.539 0,9.131 -7.389,16.548 -16.535,16.548 -9.135,0 -16.541,-7.417 -16.541,-16.548 z m -121.494,0.003 c 0,-9.129 7.413,-16.542 16.548,-16.542 9.129,0 16.537,7.413 16.537,16.542 0,9.131 -7.408,16.547 -16.537,16.547 -9.135,0 -16.548,-7.416 -16.548,-16.547 z m 16.544,-81.93 122.554,0.202 c 45.667,0 82.285,36.553 82.285,81.732 0,45.179 -36.757,81.934 -81.937,81.934 l -122.902,0 c -45.177,0 -81.934395,-36.755 -81.934395,-81.934 0,-45.179 36.757395,-81.934 81.934395,-81.934 z m -49.164,81.934 c 0,27.105 22.059,49.164 49.164,49.164 l 122.902,0 c 27.107,0 49.159,-22.059 49.159,-49.164 0,-27.112 -22.052,-49.164 -49.159,-49.164 l -122.902,0 c -27.105,0 -49.164,22.052 -49.164,49.164 z" id="path3341" inkscape:connector-curvature="0" style="fill:currentColor"></path>
+                                                                                    </svg>
+                    </div>
+                    <div class="roundlabel">Download</div>
+                </a>
+                <a href="#" class="roundbutton" id="command-save"
+                    tabindex="2"
+                    title="Save your Python code to your computer">
+                    <div class="roundsymbol">
+                        <i class="fa fa-download"></i>
+                    </div>
+                    <div class="roundlabel">Save</div>
+                </a>
+                <a href="#" class="roundbutton" id="command-load"
+                    tabindex="3"
+                    title="Load Python code or hex file into the editor">
+                    <div class="roundsymbol">
+                        <i class="fa fa-upload"></i>
+                    </div>
+                    <div class="roundlabel">Load</div>
+                </a>
+                <a href="#" class="roundbutton hidden" id="command-blockly"
+                    tabindex="4"
+                    title="Click to create code with blockly">
+                    <div class="roundsymbol">
+                      <svg class="svg svg-icon-touchdevelop" viewBox="-20 0 500 500" xmlns="http://www.w3.org/2000/svg" role="presentation" aria-label="touchdevelop,white">
+                        <path style="fill:currentColor" d="m 387.2,237.3 c -6.6,0 -12.8,1.3 -18.7,3.4 l 0,-97.2 -97.2,0 c 2.1,-5.9 3.4,-12.1 3.4,-18.8 0,-31.1 -25.2,-56.2 -56.2,-56.2 -31,0 -56.2,25.2 -56.2,56.2 0,6.6 1.4,12.9 3.4,18.8 l -97.1,0 0,300 97.2,0 c -2.1,-5.9 -3.4,-12.1 -3.4,-18.8 0,-31.1 25.2,-56.2 56.2,-56.2 31,0 56.2,25.2 56.2,56.2 0,6.6 -1.3,12.9 -3.4,18.8 l 97.2,0 0,-97.2 c 5.9,2.1 12.1,3.4 18.7,3.4 31.1,0 56.2,-25.2 56.2,-56.2 -0.1,-31.1 -25.2,-56.2 -56.3,-56.2 z"/>
+                      </svg>
+                    </div>
+                    <div class="roundlabel">Blockly</div>
+                </a>
+                <a href="#" class="roundbutton hidden" id="command-snippet"
+                    tabindex="5"
+                    title="Click to select a snippet (code shortcut)">
+                    <div class="roundsymbol">
+                        <i class="fa fa-cogs"></i>
+                    </div>
+                    <div class="roundlabel">Snippets</div>
+                </a>
+                <a href="help.html" target="_blank" class="roundbutton"
+                    id="command-help" tabindex="6"
+                    title="Open help for this editor in a new tab">
+                    <div class="roundsymbol">
+                        <i class="fa fa-question"></i>
+                    </div>
+                    <div class="roundlabel">Help</div>
+                </a>
+                <a href="#" class="roundbutton hidden"
+                    id="command-share" tabindex="7"
+                    title="Create a link to share your script">
+                    <div class="roundsymbol">
+                        <i class="fa fa-share-alt"></i>
+                    </div>
+                    <div class="roundlabel">Share</div>
+                </a>
+                <div id="script-icons" class="vbox">
+                    <a class="holder zoomer" tabindex="8" id="zoom-in"
+                        href="#">
+                        <div class="status-icon">
+                            <i class="fa fa-search-plus"
+                                title="Zoom in"></i>
+                        </div>
+                    </a>
+                    <a class="holder zoomer" tabindex="9" id="zoom-out"
+                        href="#">
+                        <div class="status-icon">
+                            <i class="fa fa-search-minus"
+                                title="Zoom out"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="vbox" id="script-box">
+                <div id="script-name" class="flex1" contenteditable
+                    tabindex="10">
+                </div>
+                <div id="script-description" contenteditable
+                    tabindex="11">
+                </div>
+            </div>
+          </div>
+          <div class="hbox flex1">
+            <div id="blockly"></div>
+            <div id="editor" class="flex3" tabindex="-1"></div>
+          </div>
+        </div>
+        <script src="ace/ace.js" type="application/javascript"
+            charset="utf-8"></script>
+        <script src="ace/ext-language_tools.js" type="application/javascript"
+            charset="utf-8"></script>
+        <script src="static/js/jquery-2.1.4.min.js"
+            type="application/javascript"></script>
+        <script src="static/js/forge.min.js" type="application/javascript"></script>
+        <script src="static/js/FileSaver.min.js" type="application/javascript"></script>
+        <script src="static/js/vex.combined.min.js"
+            type="application/javascript"></script>
+        <script src="static/js/encoding.js" type="application/javascript"></script>
+        <script src="static/js/mustache.min.js"
+            type="application/javascript"></script>
+        <script src="blockly/blockly_compressed.js"></script>
+        <script src="blockly/blocks_compressed.js"></script>
+        <script src="blockly/python_compressed.js"></script>
+        <script src="microbit_blocks/blocks/microbit.js"></script>
+        <script src="microbit_blocks/generators/accelerometer.js"></script>
+        <script src="microbit_blocks/generators/buttons.js"></script>
+        <script src="microbit_blocks/generators/compass.js"></script>
+        <script src="microbit_blocks/generators/display.js"></script>
+        <script src="microbit_blocks/generators/image.js"></script>
+        <script src="microbit_blocks/generators/microbit.js"></script>
+        <script src="microbit_blocks/generators/music.js"></script>
+        <script src="microbit_blocks/generators/neopixel.js"></script>
+        <script src="microbit_blocks/generators/pins.js"></script>
+        <script src="microbit_blocks/generators/radio.js"></script>
+        <script src="microbit_blocks/generators/speech.js"></script>
+        <script src="microbit_blocks/generators/python.js"></script>
+        <script src="blockly/msg/js/en.js"></script>
+	    <script src="microbit_blocks/messages/en/messages.js"></script>
+        <script src="python-main.js"
+            type="application/javascript"></script>
+        <script>vex.defaultOptions.className = 'vex-theme-wireframe';</script>
+        <script>
+// Call the web_editor function to start the editor running.
+web_editor({
+    'translate': {
+      'code_snippets': {
+        'title': 'Code Snippets',
+        'description': "Code snippets are short blocks of code to re-use in your own programs. There are snippets for most common things you'll want to do using MicroPython.",
+        'instructions': "Select one of the snippets below, or type the snippet's trigger then tap the TAB key.",
+        'trigger_heading': 'trigger',
+        'description_heading': 'description',
+        'docs': 'create a comment to describe your code',
+        'wh': 'while some condition is True, keep looping over some code',
+        'with': 'do some stuff with something assigned to a name',
+        'cl': 'create a new class that defines the behaviour of a new type of object',
+        'def': 'define a named function that takes some arguments and optionally add a description',
+        'if': 'if some condition is True, do something',
+        'ei': 'else if some other condition is True, do something',
+        'el': 'else do some other thing',
+        'for': 'for each item in a collection of items do something with each item',
+        'try': 'try doing something and handle exceptions (errors)'
+      },
+      'share': {
+        'title': 'Share Code',
+        'instructions': 'Use a password and optional hint (to help you remember the password) to securely create a link to share your code with others.',
+        'passphrase': 'Password: ',
+        'hint': 'Password hint: ',
+        'button': 'Create Link',
+        'description': 'This URL points to your code:',
+        'shortener': 'This is a short version of the link:'
+      },
+      'decrypt': {
+        'title': 'Decrypt Source Code',
+        'instructions': 'Enter a password to decrypt the source code.',
+        'passphrase': 'Password: ',
+        'button': 'Decrypt'
+      },
+      'alerts': {
+        'download': 'Safari has a bug that means your work will be downloaded as an un-named file. Please rename it to something ending in .hex. Alternatively, use a browser such as Firefox or Chrome. They do not suffer from this bug.',
+        'save': 'Safari has a bug that means your work will be downloaded as an un-named file. Please rename it to something ending in .py. Alternatively, use a browser such as Firefox or Chrome. They do not suffer from this bug.',
+        'length': 'Oops! Your script is to long given the limited memory on the device.',
+        'snippets': 'Snippets are disabled when blockly is enabled.'
+      },
+      'confirms': {
+        'quit': "Some of your changes have not been saved. Quit anyway?",
+        'blocks': "You have unsaved code. Using blocks will change your code. You may lose your changes. Do you want to continue?"
+      },
+      'code': {
+        'start': "# Add your Python code here. E.g.\n" +
+                 "from microbit import *\n\n\n" +
+                 "while True:\n" +
+                 "    display.scroll('Hello, World!')\n" +
+                 "    display.show(Image.HEART)\n" +
+                 "    sleep(2000)\n"
+      },
+      'drop': {
+        'python': 'Extracted from a Python file',
+        'hex': 'Extracted from a hex file'
+      },
+      'messagebar': {
+        'title': 'This editor is out of date!',
+        'link': 'Click here',
+        'instructions': 'to open the latest version.',
+        'close': 'Hide'
+      },
+      'load': {
+        'title': 'Load Script or HEX file',
+        'instructions': 'Drag and drop a .hex or .py file in here to open it.',
+        'submit': 'Load',
+        'toggle-drop': 'Or drag and drop a file',
+        'toggle-file': 'Or pick a file'
+      }
+    },
+    'flags': {
+      'blocks': false,
+      'snippets': true,
+      'share': false
+    },
+});
+        </script>
+<xml id="blockly-toolbox" style="display: none">
+  <category name="Accelerometer" colour="0">
+    <block type="microbit_accelerometer_get_x"></block>
+    <block type="microbit_accelerometer_get_y"></block>
+    <block type="microbit_accelerometer_get_z"></block>
+    <block type="microbit_accelerometer_was_gesture"></block>
+    <block type="microbit_accelerometer_is_gesture"></block>
+    <block type="microbit_accelerometer_get_gestures"></block>
+    <block type="microbit_accelerometer_current_gesture"></block>
+  </category>
+  <category name="Buttons" colour="32">
+    <block type="microbit_button_is_pressed"></block>
+    <block type="microbit_button_was_pressed"></block>
+    <block type="microbit_button_get_presses"></block>
+  </category>
+  <category name="Compass" colour="64">
+    <block type="microbit_compass_calibrate"></block>
+    <block type="microbit_compass_is_calibrated"></block>
+    <block type="microbit_compass_heading"></block>
+    <block type="microbit_compass_get_field_strength"></block>
+  </category>
+  <category name="Display" colour="96">
+    <block type="microbit_display_get_pixel"><value name="x"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <block type="microbit_display_set_pixel"><value name="x"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="y"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="value"><shadow type="math_number"><field name="NUM">9</field></shadow></value></block>
+    <block type="microbit_display_clear"></block>
+    <block type="microbit_display_show_image"></block>
+    <block type="microbit_display_show_animation"></block>
+    <block type="microbit_display_scroll"><value name="message"><shadow type="text"><field name="TEXT">Hello, World!</field></shadow></value></block>
+    <block type="microbit_display_on"></block>
+    <block type="microbit_display_off"></block>
+    <block type="microbit_display_is_on"></block>
+  </category>
+  <category name="Image" colour="128">
+    <block type="microbit_image_builtins"></block>
+    <block type="microbit_image_copy"></block>
+    <block type="microbit_image_invert"></block>
+    <block type="microbit_image_create"></block>
+  </category>
+  <category name="Microbit" colour="160">
+    <block type="microbit_microbit_panic"></block>
+    <block type="microbit_microbit_reset"></block>
+    <block type="microbit_microbit_sleep"><value name="duration"><shadow type="math_number"><field name="NUM">1000</field></shadow></value></block>
+    <block type="microbit_microbit_running_time"></block>
+    <block type="microbit_microbit_temperature"></block>
+  </category>
+  <category name="Music" colour="192">
+    <block type="microbit_music_play_built_in"></block>
+    <block type="microbit_music_pitch"></block>
+    <block type="microbit_music_play_list_of_notes"></block>
+    <block type="microbit_music_reset"></block>
+    <block type="microbit_music_stop"></block>
+    <block type="microbit_music_set_tempo"><value name="ticks"><shadow type="math_number"><field name="NUM">4</field></shadow></value><value name="bpm"><shadow type="math_number"><field name="NUM">120</field></shadow></value></block>
+    <block type="microbit_music_get_tempo"></block>
+  </category>
+  <category name="Neopixel" colour="224">
+    <block type="microbit_neopixel_initialise"></block>
+    <block type="microbit_neopixel_clear"></block>
+    <block type="microbit_neopixel_show"></block>
+    <block type="microbit_neopixel_set"><value name="pixel"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="red"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="green"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="blue"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+  </category>
+  <category name="Pins" colour="256">
+    <block type="microbit_pin_touched"></block>
+    <block type="microbit_pin_read_analog"></block>
+    <block type="microbit_pin_write_analog"><value name="output"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <block type="microbit_pin_read_digital"></block>
+    <block type="microbit_pin_write_digital"><value name="output"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+  </category>
+  <category name="Radio" colour="288">
+    <block type="microbit_radio_on"></block>
+    <block type="microbit_radio_off"></block>
+    <block type="microbit_radio_config"></block>
+    <block type="microbit_radio_reset"></block>
+    <block type="microbit_radio_send_string"><value name="message"><shadow type="text"><field name="TEXT">Some text</field></shadow></value></block>
+    <block type="microbit_radio_receive"></block>
+  </category>
+  <category name="Speech" colour="320">
+    <block type="microbit_speech_say"><value name="english"><shadow type="text"><field name="TEXT">Exterminate!</field></shadow></value></block>
+    <block type="microbit_speech_pronounce"><value name="phonemes"><shadow type="text"><field name="TEXT">/HEH5EH4EH3EH2EH2EH3EH4EH5EHLP.</field></shadow></value></block>
+    <block type="microbit_speech_sing"><value name="song"><shadow type="text"><field name="TEXT">#115DOWWWW</field></shadow></value></block>
+  </category>
+	    <sep></sep>
+	    <category name="Logic" colour="210">
+	      <block type="controls_if"></block>
+	      <block type="logic_compare"></block>
+	      <block type="logic_operation"></block>
+	      <block type="logic_negate"></block>
+	      <block type="logic_boolean"></block>
+	      <block type="logic_null"></block>
+	      <block type="logic_ternary"></block>
+	    </category>
+	    <category name="Loops" colour="120">
+	      <block type="controls_repeat_ext">
+		<value name="TIMES">
+		  <shadow type="math_number">
+		    <field name="NUM">10</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="controls_whileUntil"></block>
+	      <block type="controls_for">
+		<value name="FROM">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+		<value name="TO">
+		  <shadow type="math_number">
+		    <field name="NUM">10</field>
+		  </shadow>
+		</value>
+		<value name="BY">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="controls_forEach"></block>
+	      <block type="controls_flow_statements"></block>
+	    </category>
+	    <category name="Math" colour="230">
+	      <block type="math_number" gap="32"></block>
+	      <block type="math_arithmetic">
+		<value name="A">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+		<value name="B">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_single">
+		<value name="NUM">
+		  <shadow type="math_number">
+		    <field name="NUM">9</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_trig">
+		<value name="NUM">
+		  <shadow type="math_number">
+		    <field name="NUM">45</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_constant"></block>
+	      <block type="math_number_property">
+		<value name="NUMBER_TO_CHECK">
+		  <shadow type="math_number">
+		    <field name="NUM">0</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_round">
+		<value name="NUM">
+		  <shadow type="math_number">
+		    <field name="NUM">3.1</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_on_list"></block>
+	      <block type="math_modulo">
+		<value name="DIVIDEND">
+		  <shadow type="math_number">
+		    <field name="NUM">64</field>
+		  </shadow>
+		</value>
+		<value name="DIVISOR">
+		  <shadow type="math_number">
+		    <field name="NUM">10</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_constrain">
+		<value name="VALUE">
+		  <shadow type="math_number">
+		    <field name="NUM">50</field>
+		  </shadow>
+		</value>
+		<value name="LOW">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+		<value name="HIGH">
+		  <shadow type="math_number">
+		    <field name="NUM">100</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_random_int">
+		<value name="FROM">
+		  <shadow type="math_number">
+		    <field name="NUM">1</field>
+		  </shadow>
+		</value>
+		<value name="TO">
+		  <shadow type="math_number">
+		    <field name="NUM">100</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="math_random_float"></block>
+	    </category>
+	    <category name="Text" colour="160">
+	      <block type="text"></block>
+	      <block type="text_join"></block>
+	      <block type="text_append">
+		<value name="TEXT">
+		  <shadow type="text"></shadow>
+		</value>
+	      </block>
+	      <block type="text_length">
+		<value name="VALUE">
+		  <shadow type="text">
+		    <field name="TEXT">abc</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="text_isEmpty">
+		<value name="VALUE">
+		  <shadow type="text">
+		    <field name="TEXT"></field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="text_indexOf">
+		<value name="VALUE">
+		  <block type="variables_get">
+		    <field name="VAR">text</field>
+		  </block>
+		</value>
+		<value name="FIND">
+		  <shadow type="text">
+		    <field name="TEXT">abc</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="text_charAt">
+		<value name="VALUE">
+		  <block type="variables_get">
+		    <field name="VAR">text</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="text_getSubstring">
+		<value name="STRING">
+		  <block type="variables_get">
+		    <field name="VAR">text</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="text_changeCase">
+		<value name="TEXT">
+		  <shadow type="text">
+		    <field name="TEXT">abc</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="text_trim">
+		<value name="TEXT">
+		  <shadow type="text">
+		    <field name="TEXT">abc</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="text_print">
+		<value name="TEXT">
+		  <shadow type="text">
+		    <field name="TEXT">abc</field>
+		  </shadow>
+		</value>
+	      </block>
+	    </category>
+	    <category name="Lists" colour="260">
+	      <block type="lists_create_with">
+		<mutation items="0"></mutation>
+	      </block>
+	      <block type="lists_create_with"></block>
+	      <block type="lists_repeat">
+		<value name="NUM">
+		  <shadow type="math_number">
+		    <field name="NUM">5</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="lists_length"></block>
+	      <block type="lists_isEmpty"></block>
+	      <block type="lists_indexOf">
+		<value name="VALUE">
+		  <block type="variables_get">
+		    <field name="VAR">list</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="lists_getIndex">
+		<value name="VALUE">
+		  <block type="variables_get">
+		    <field name="VAR">list</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="lists_setIndex">
+		<value name="LIST">
+		  <block type="variables_get">
+		    <field name="VAR">list</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="lists_getSublist">
+		<value name="LIST">
+		  <block type="variables_get">
+		    <field name="VAR">list</field>
+		  </block>
+		</value>
+	      </block>
+	      <block type="lists_split">
+		<value name="DELIM">
+		  <shadow type="text">
+		    <field name="TEXT">,</field>
+		  </shadow>
+		</value>
+	      </block>
+	      <block type="lists_sort"></block>
+	    </category>
+	    <sep></sep>
+	    <category name="Variables" colour="330" custom="VARIABLE"></category>
+	  </xml>
+        <div id="firmware" style="display: none;">
+            
+    </div>
+    </body>
+</html>
