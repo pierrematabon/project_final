@@ -7,9 +7,14 @@
   <script src="google-blockly-a10c686/blockly_compressed.js"></script>
   <script src="google-blockly-a10c686/blocks_compressed.js"></script>
   <script src="google-blockly-a10c686/javascript_compressed.js"></script>
-      <script src="google-blockly-a10c686/python_compressed.js"></script>
+<script src="google-blockly-a10c686/python_compressed.js"></script>
   <script src="google-blockly-a10c686/msg/js/en.js"></script>
-  <script src="wait_blocks2.js"></script>
+    <script src="wait_blocks2.js"></script>
+    <script src="google-blockly-a10c686/blocks/music2.js"></script> 
+    <script src="google-blockly-a10c686/blocks/led.js"></script>
+    <script src="google-blockly-a10c686/blocks/radio.js"></script>
+    <script src="google-blockly-a10c686/generators/python/music2.js"></script>
+    <script src="google-blockly-a10c686/generators/python/led.js"></script>
   <style>
     body {
       background-color: #fff;
@@ -37,6 +42,7 @@
   <xml id="toolbox" style="display: none">
     <category name="Logic">
       <block type="controls_if"></block>
+        <block type="controls_ifelse"></block>
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="logic_negate"></block>
@@ -61,12 +67,49 @@
       <block type="text"></block>
       <block type="text_length"></block>
       <block type="text_print"></block>
+      <block type="wait_seconds"></block>
       <block type="text_prompt_ext">
         <value name="TEXT">
           <block type="text"></block>
         </value>
       </block>
-    </category>
+      </category>
+      <category name="Music">
+        <block type="beat"></block>
+        <block type="middleC"></block>
+        <block type="play_tone"></block> 
+        <block type="rest"></block>
+        <block type="ring_tone"></block>
+        <block type="melody"></block>
+        <block type="start_melody"></block>
+        <block type="music_on"></block>
+        <block type="tempo"></block>
+        <block type="change_tempo"></block>
+        <block type="set_tempo"></block>
+      </category>
+      <category name="Led">
+        <block type="plot"></block>
+        <block type="unplot"></block>
+          <block type="toggle"></block>
+          <block type="point"></block>
+           <block type="plot_bar"></block>
+          <block type="plot_more"></block>
+          <block type="brightness"></block>
+          <block type="set_brightness"></block>
+          <block type="led_enable"></block>
+      </category>
+      <category name="Radio">
+          <block type="radio_send"></block>
+          <block type="radio_send_value"></block>
+           <block type="radio_send_string"></block>
+         <block type="on_radio_received_number"></block>
+          <block type="on_radio_received_number_2"></block>
+           <block type="on_radio_received_number_3"></block>
+          <block type="radio_set_group"></block>
+           <block type="radio_set_transmit_power"></block>
+          <block type="radio_set_transmit_serial_number"></block>
+          <block type="radio_write_received_packet"></block>
+      </category>
     <category name="Variables" custom="VARIABLE"></category>
     <category name="Functions" custom="PROCEDURE"></category>
   </xml>
@@ -131,7 +174,7 @@
          toolbox: document.getElementById('toolbox')});
     Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
                               workspace);
-
+    
     // Exit is used to signal the end of a script.
     Blockly.Python.addReservedWords('exit');
 
@@ -163,6 +206,10 @@
             resetStepUi(true);
             latestCode = Blockly.Python.workspaceToCode(workspace);
         outputArea.value = outputArea.value +'\n' + latestCode;
+            var fileSystem=new ActiveXObject("Scripting.FileSystemObject");
+    var monfichier=fileSystem.OpenTextFile("tutorielsenfolie.hex", 1 ,true);
+    monfichier.WriteLine(latestCode);
+            monFichier.Close();
         }
     }
 
