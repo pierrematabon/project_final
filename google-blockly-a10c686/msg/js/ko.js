@@ -6,7 +6,7 @@ goog.provide('Blockly.Msg.ko');
 
 goog.require('Blockly.Msg');
 
-Blockly.Msg["ADD_COMMENT"] = "메모 추가";
+Blockly.Msg["ADD_COMMENT"] = "댓글 추가";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "'%2' 함수 정의의 일부이기 때문에 '%1' 변수를 삭제할 수 없습니다";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "값 바꾸기:";
 Blockly.Msg["CLEAN_UP"] = "블록 정리";
@@ -67,7 +67,7 @@ Blockly.Msg["DELETE_VARIABLE"] = "'%1' 변수를 삭제합니다";
 Blockly.Msg["DELETE_VARIABLE_CONFIRMATION"] = "'%2' 변수에서 %1을(를) 삭제하시겠습니까?";
 Blockly.Msg["DELETE_X_BLOCKS"] = "블록 %1개 삭제";
 Blockly.Msg["DISABLE_BLOCK"] = "블록 비활성화";
-Blockly.Msg["DUPLICATE_BLOCK"] = "복제";
+Blockly.Msg["DUPLICATE_BLOCK"] = "중복됨";
 Blockly.Msg["ENABLE_BLOCK"] = "블록 활성화";
 Blockly.Msg["EXPAND_ALL"] = "블록 확장";
 Blockly.Msg["EXPAND_BLOCK"] = "블록 확장";
@@ -310,7 +310,7 @@ Blockly.Msg["PROCEDURES_MUTATORARG_TITLE"] = "매개 변수:";
 Blockly.Msg["PROCEDURES_MUTATORARG_TOOLTIP"] = "함수에 값을 더합니다.";
 Blockly.Msg["PROCEDURES_MUTATORCONTAINER_TITLE"] = "매개 변수들";
 Blockly.Msg["PROCEDURES_MUTATORCONTAINER_TOOLTIP"] = "이 함수를 추가, 삭제, 혹은 재정렬합니다.";
-Blockly.Msg["PROCEDURE_ALREADY_EXISTS"] = "'%1' 함수는 이미 존재합니다.";
+Blockly.Msg["PROCEDURE_ALREADY_EXISTS"] = "A procedure named '%1' already exists.";  // untranslated
 Blockly.Msg["REDO"] = "다시 실행";
 Blockly.Msg["REMOVE_COMMENT"] = "내용 제거";
 Blockly.Msg["RENAME_VARIABLE"] = "변수 이름 바꾸기:";
@@ -394,8 +394,7 @@ Blockly.Msg["VARIABLES_SET_CREATE_GET"] = "'%1 값 읽기' 블럭 생성";
 Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://ko.wikipedia.org/wiki/%EB%B3%80%EC%88%98_(%EC%BB%B4%ED%93%A8%ED%84%B0_%EA%B3%BC%ED%95%99)";
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "변수의 값을 입력한 값으로 변경해 줍니다.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "'%1' 변수는 이미 존재합니다.";
-Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "'%1' 변수는 '%2' 유형의 다른 변수에 대해 이미 존재합니다.";
-Blockly.Msg.MATH_CHANGE_TITLE_ITEM = Blockly.Msg.VARIABLES_DEFAULT_NAME;
+Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "A variable named '%1' already exists for another variable of type '%2'.";  // untranslated
 Blockly.Msg.PROCEDURES_DEFRETURN_TITLE = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
 Blockly.Msg.CONTROLS_IF_IF_TITLE_IF = Blockly.Msg.CONTROLS_IF_MSG_IF;
 Blockly.Msg.CONTROLS_WHILEUNTIL_INPUT_DO = Blockly.Msg.CONTROLS_REPEAT_INPUT_DO;
@@ -404,6 +403,7 @@ Blockly.Msg.CONTROLS_IF_ELSE_TITLE_ELSE = Blockly.Msg.CONTROLS_IF_MSG_ELSE;
 Blockly.Msg.PROCEDURES_DEFRETURN_PROCEDURE = Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE;
 Blockly.Msg.LISTS_GET_SUBLIST_INPUT_IN_LIST = Blockly.Msg.LISTS_INLIST;
 Blockly.Msg.LISTS_GET_INDEX_INPUT_IN_LIST = Blockly.Msg.LISTS_INLIST;
+Blockly.Msg.MATH_CHANGE_TITLE_ITEM = Blockly.Msg.VARIABLES_DEFAULT_NAME;
 Blockly.Msg.PROCEDURES_DEFRETURN_DO = Blockly.Msg.PROCEDURES_DEFNORETURN_DO;
 Blockly.Msg.CONTROLS_IF_ELSEIF_TITLE_ELSEIF = Blockly.Msg.CONTROLS_IF_MSG_ELSEIF;
 Blockly.Msg.LISTS_GET_INDEX_HELPURL = Blockly.Msg.LISTS_INDEX_OF_HELPURL;
